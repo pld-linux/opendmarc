@@ -9,7 +9,7 @@ License:	BSD
 Group:		Daemons
 Source0:	http://downloads.sourceforge.net/opendmarc/%{name}-%{version}.tar.gz
 # Source0-md5:	bad2c454841cf7711fc148e114620051
-Source1:	opendmarc.tmpfiles
+Source1:	%{name}.tmpfiles
 URL:		http://www.trusteddomain.org/opendmarc.html
 BuildRequires:	libtool
 BuildRequires:	mysql-devel
@@ -124,8 +124,8 @@ fi
 %{_mandir}/man5/opendmarc.conf.5*
 %{_mandir}/man8/opendmarc*.8*
 %{systemdtmpfilesdir}/%{name}.conf
-%dir %attr(-,%{name},%{name}) %{_localstatedir}/spool/%{name}
-%dir %attr(-,%{name},%{name}) %{_localstatedir}/run/%{name}
+%dir %attr(700,opendmarc,opendmarc) %{_localstatedir}/spool/%{name}
+%dir %attr(700,opendmarc,opendmarc) %{_localstatedir}/run/%{name}
 
 %files -n libopendmarc
 %defattr(644,root,root,755)
