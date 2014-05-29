@@ -53,7 +53,9 @@ files required for developing applications against libopendmarc.
 %setup -q
 
 %build
-%configure
+%configure \
+	--disable-silent-rules \
+	--disable-static
 %{__make}
 
 %install
@@ -76,8 +78,8 @@ cat > $RPM_BUILD_ROOT%{_sysconfdir}/tmpfiles.d/%{name}.conf <<EOF
 D %{_localstatedir}/run/%{name} 0700 %{name} %{name} -
 EOF
 
-rm $RPM_BUILD_ROOT%{_libdir}/*.{la,a}
-# packages as %doc
+rm $RPM_BUILD_ROOT%{_libdir}/*.la
+# packaged as %doc
 rm -r $RPM_BUILD_ROOT%{_docdir}/%{name}
 
 install -d $RPM_BUILD_ROOT%{_includedir}/%{name}
