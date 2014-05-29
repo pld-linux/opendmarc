@@ -14,7 +14,7 @@ BuildRequires:	libtool
 BuildRequires:	mysql-devel
 BuildRequires:	openssl-devel
 BuildRequires:	pkgconfig
-BuildRequires:	rpmbuild(macros) >= 1.583
+BuildRequires:	rpmbuild(macros) >= 1.644
 BuildRequires:	sendmail-devel
 Requires:	libopendmarc = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -73,8 +73,8 @@ perl -pi -e 's|^# (HistoryFile /var/run)/(opendmarc.dat)|$1/opendmarc/$2/;
              s|^# (UserId )|$1|;
             ' $RPM_BUILD_ROOT%{_sysconfdir}/%{name}.conf
 
-install -p -d $RPM_BUILD_ROOT%{_sysconfdir}/tmpfiles.d
-cat > $RPM_BUILD_ROOT%{_sysconfdir}/tmpfiles.d/%{name}.conf <<EOF
+install -p -d $RPM_BUILD_ROOT%{systemdtmpfilesdir}
+cat > $RPM_BUILD_ROOT%{systemdtmpfilesdir}/%{name}.conf <<EOF
 D %{_localstatedir}/run/%{name} 0700 %{name} %{name} -
 EOF
 
@@ -114,8 +114,7 @@ fi
 %defattr(644,root,root,755)
 %doc INSTALL README RELEASE_NOTES docs/draft-dmarc-base-02.txt
 %doc db/README.schema db/schema.mysql
-%config(noreplace) %{_sysconfdir}/%{name}.conf
-%config(noreplace) %{_sysconfdir}/tmpfiles.d/%{name}.conf
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}.conf
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
 %attr(755,root,root) %{_sbindir}/opendmarc
 %attr(755,root,root) %{_sbindir}/opendmarc-check
@@ -126,6 +125,7 @@ fi
 %attr(755,root,root) %{_sbindir}/opendmarc-reports
 %{_mandir}/man5/opendmarc.conf.5*
 %{_mandir}/man8/opendmarc*.8*
+%{systemdtmpfilesdir}/%{name}.conf
 %dir %attr(-,%{name},%{name}) %{_localstatedir}/spool/%{name}
 %dir %attr(-,%{name},%{name}) %{_localstatedir}/run/%{name}
 
