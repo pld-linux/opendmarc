@@ -17,6 +17,9 @@ BuildRequires:	sendmail-devel
 Requires:	libopendmarc = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
+# unresolved __dn_expand, __dn_skipname, __res_query
+%define		skip_post_check_so	libopendmarc.so.1.0.2
+
 %description
 OpenDMARC (Domain-based Message Authentication, Reporting &
 Conformance) provides an open source library that implements the DMARC
