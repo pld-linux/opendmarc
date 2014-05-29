@@ -114,17 +114,25 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}.conf
 %config(noreplace) %{_sysconfdir}/tmpfiles.d/%{name}.conf
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
-%attr(755,root,root) %{_sbindir}/*
-%{_mandir}/*/*
+%attr(755,root,root) %{_sbindir}/opendmarc
+%attr(755,root,root) %{_sbindir}/opendmarc-check
+%attr(755,root,root) %{_sbindir}/opendmarc-expire
+%attr(755,root,root) %{_sbindir}/opendmarc-import
+%attr(755,root,root) %{_sbindir}/opendmarc-importstats
+%attr(755,root,root) %{_sbindir}/opendmarc-params
+%attr(755,root,root) %{_sbindir}/opendmarc-reports
+%{_mandir}/man5/opendmarc.conf.5*
+%{_mandir}/man8/opendmarc*.8*
 %dir %attr(-,%{name},%{name}) %{_localstatedir}/spool/%{name}
 %dir %attr(-,%{name},%{name}) %{_localstatedir}/run/%{name}
 
 %files -n libopendmarc
 %defattr(644,root,root,755)
-%{_libdir}/libopendmarc.so.*
+%attr(755,root,root) %{_libdir}/libopendmarc.so.*.*.*
+%ghost %{_libdir}/libopendmarc.so.1
 
 %files -n libopendmarc-devel
 %defattr(644,root,root,755)
 %doc libopendmarc/docs/*.html
 %{_includedir}/%{name}
-%{_libdir}/*.so
+%{_libdir}/libopendmarc.so
