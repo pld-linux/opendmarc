@@ -76,8 +76,9 @@ cat > $RPM_BUILD_ROOT%{_sysconfdir}/tmpfiles.d/%{name}.conf <<EOF
 D %{_localstatedir}/run/%{name} 0700 %{name} %{name} -
 EOF
 
-mv $RPM_BUILD_ROOT%{_docdir}/%{name} $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
 rm $RPM_BUILD_ROOT%{_libdir}/*.{la,a}
+# packages as %doc
+rm -r $RPM_BUILD_ROOT%{_docdir}/%{name}
 
 install -d $RPM_BUILD_ROOT%{_includedir}/%{name}
 cp -p libopendmarc/dmarc.h $RPM_BUILD_ROOT%{_includedir}/%{name}
