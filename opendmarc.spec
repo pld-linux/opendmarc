@@ -11,9 +11,6 @@ Source0:	http://downloads.sourceforge.net/opendmarc/%{name}-%{version}.tar.gz
 # Source0-md5:	bad2c454841cf7711fc148e114620051
 Source1:	%{name}.tmpfiles
 URL:		http://www.trusteddomain.org/opendmarc.html
-BuildRequires:	libtool
-BuildRequires:	mysql-devel
-BuildRequires:	openssl-devel
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.644
 BuildRequires:	sendmail-devel
