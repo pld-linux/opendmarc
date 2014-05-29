@@ -1,5 +1,6 @@
 # TODO
 # - pld useradd/groupadd and register uid/gid
+# - pldize initscript
 Summary:	DMARC milter and library
 Name:		opendmarc
 Version:	1.2.0
@@ -13,6 +14,7 @@ BuildRequires:	libtool
 BuildRequires:	mysql-devel
 BuildRequires:	openssl-devel
 BuildRequires:	pkgconfig
+BuildRequires:	rpmbuild(macros) >= 1.583
 BuildRequires:	sendmail-devel
 Requires:	libopendmarc = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
