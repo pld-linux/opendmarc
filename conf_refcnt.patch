@@ -1,0 +1,22 @@
+From: =?utf-8?b?0JTQuNC70Y/QvSDQn9Cw0LvQsNGD0LfQvtCy?= <git-dpa@aegee.org>
+Date: Tue, 18 Jan 2022 11:57:01 -0500
+Subject: opendmarc/opendmarc.c:dmarfc_config_free: don't assert
+ conf->conf_refcnt == 0
+
+Bug: https://github.com/trusteddomainproject/OpenDMARC/issues/18
+---
+ opendmarc/opendmarc.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/opendmarc/opendmarc.c b/opendmarc/opendmarc.c
+index fbb6e40..fbf06b6 100644
+--- a/opendmarc/opendmarc.c
++++ b/opendmarc/opendmarc.c
+@@ -4225,7 +4225,6 @@ static void
+ dmarcf_config_free(struct dmarcf_config *conf)
+ {
+ 	assert(conf != NULL);
+-	assert(conf->conf_refcnt == 0);
+ 
+ 	if (conf->conf_data != NULL)
+ 		config_free(conf->conf_data);

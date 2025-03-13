@@ -1,0 +1,49 @@
+From: =?utf-8?q?David_B=C3=BCrgin?= <dbuergin@gluet.ch>
+Date: Tue, 18 Jan 2022 11:57:01 -0500
+Subject: Insert trace headers at index 0
+
+Bug: https://github.com/trusteddomainproject/OpenDMARC/pull/171
+---
+ opendmarc/opendmarc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/opendmarc/opendmarc.c b/opendmarc/opendmarc.c
+index 5b09c3f..fbb6e40 100644
+--- a/opendmarc/opendmarc.c
++++ b/opendmarc/opendmarc.c
+@@ -3177,7 +3177,7 @@ mlfi_eom(SMFICTX *ctx)
+ 					 authservid, pass_fail, use_domain);
+ 			}
+ 
+-			if (dmarcf_insheader(ctx, 1, AUTHRESULTSHDR,
++			if (dmarcf_insheader(ctx, 0, AUTHRESULTSHDR,
+ 					     header) == MI_FAILURE)
+ 			{
+ 				if (conf->conf_dolog)
+@@ -3242,7 +3242,7 @@ mlfi_eom(SMFICTX *ctx)
+ 		         "%s; dmarc=permerror header.from=%s",
+ 		         authservid, dfc->mctx_fromdomain);
+ 
+-		if (dmarcf_insheader(ctx, 1, AUTHRESULTSHDR,
++		if (dmarcf_insheader(ctx, 0, AUTHRESULTSHDR,
+ 		                     header) == MI_FAILURE)
+ 		{
+ 			if (conf->conf_dolog)
+@@ -3791,7 +3791,7 @@ mlfi_eom(SMFICTX *ctx)
+ 		         conf->conf_authservidwithjobid ? dfc->mctx_jobid : "",
+ 		         aresult, apolicy, adisposition, dfc->mctx_fromdomain);
+ 
+-		if (dmarcf_insheader(ctx, 1, AUTHRESULTSHDR,
++		if (dmarcf_insheader(ctx, 0, AUTHRESULTSHDR,
+ 		                     header) == MI_FAILURE)
+ 		{
+ 			if (conf->conf_dolog)
+@@ -3910,7 +3910,7 @@ mlfi_eom(SMFICTX *ctx)
+ 		         dfc->mctx_jobid != NULL ? dfc->mctx_jobid
+ 		                                 : JOBIDUNKNOWN);
+ 
+-		if (dmarcf_insheader(ctx, 1, SWHEADERNAME,
++		if (dmarcf_insheader(ctx, 0, SWHEADERNAME,
+ 		                     header) == MI_FAILURE)
+ 		{
+ 			if (conf->conf_dolog)

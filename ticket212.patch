@@ -1,0 +1,27 @@
+From: Scott Kitterman <scott@kitterman.com>
+Date: Mon, 23 Dec 2019 11:12:36 -0500
+Subject: ticket212
+
+Bug: https://sourceforge.net/p/opendmarc/tickets/212/
+---
+ libopendmarc/opendmarc_tld.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/libopendmarc/opendmarc_tld.c b/libopendmarc/opendmarc_tld.c
+index 6dd889d..fa2de26 100644
+--- a/libopendmarc/opendmarc_tld.c
++++ b/libopendmarc/opendmarc_tld.c
+@@ -134,8 +134,11 @@ opendmarc_tld_read_file(char *path_fname, char *commentstring, char *drop, char
+ 		return (errno == 0) ? ENOMEM : errno;
+ 
+ 	fp = fopen(path_fname, "r");
+-	if (fp == NULL)
+-		return errno;
++	if (fp == NULL) {
++		ret = errno;
++		opendmarc_hash_shutdown(hashp);
++		return ret;
++	}
+ 
+ 	errno = 0;
+ 	while (fgets((char *)buf, sizeof buf, fp) != NULL)

@@ -1,0 +1,22 @@
+From: =?utf-8?q?David_B=C3=BCrgin?= <dbuergin@gluet.ch>
+Date: Tue, 18 Jan 2022 11:57:01 -0500
+Subject: Make function check_domain static
+
+Bug: https://github.com/trusteddomainproject/OpenDMARC/pull/177
+---
+ libopendmarc/opendmarc_policy.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libopendmarc/opendmarc_policy.c b/libopendmarc/opendmarc_policy.c
+index 32053db..c864906 100644
+--- a/libopendmarc/opendmarc_policy.c
++++ b/libopendmarc/opendmarc_policy.c
+@@ -35,7 +35,7 @@
+ **  	TRUE if the syntax was fine, FALSE otherwise.
+ */
+ 
+-bool check_domain(u_char *domain)
++static bool check_domain(u_char *domain)
+ {
+ 	u_char *dp;
+ 

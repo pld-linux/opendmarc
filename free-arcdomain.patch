@@ -1,0 +1,25 @@
+From: "@KIC-8462852" <>
+Date: Tue, 18 Jan 2022 11:57:01 -0500
+Subject: Fix memory leak when evaluating ARC chain by freeing temporary
+ string "arcdomain"
+
+Origin: other, https://github.com/trusteddomainproject/OpenDMARC/files/6682308/opendmarc-free-arcdomain-patch.txt
+Bug: https://github.com/trusteddomainproject/OpenDMARC/issues/182
+---
+ opendmarc/opendmarc.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/opendmarc/opendmarc.c b/opendmarc/opendmarc.c
+index fbf06b6..be3d496 100644
+--- a/opendmarc/opendmarc.c
++++ b/opendmarc/opendmarc.c
+@@ -3009,6 +3009,9 @@ mlfi_eom(SMFICTX *ctx)
+ 							eptr = hsearch(entry,
+ 							               FIND);
+ 							pthread_rwlock_unlock(&hash_lock);
++
++							free(arcdomain);
++
+ 							if (eptr == NULL)
+ 								continue;
+ 

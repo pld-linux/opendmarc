@@ -1,0 +1,49 @@
+From: "@KIC-8462852" <>
+Date: Sat, 17 Jun 2023 11:48:36 +0100
+Subject: Fix segfaults in ARC-Authentication-Results headers
+
+Origin: other, https://github.com/trusteddomainproject/OpenDMARC/files/11602352/opendmarc-arcares.patch.txt
+Bug: https://github.com/trusteddomainproject/OpenDMARC/issues/242
+---
+ opendmarc/opendmarc-arcares.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/opendmarc/opendmarc-arcares.c b/opendmarc/opendmarc-arcares.c
+index 0beebda..f7a5c83 100644
+--- a/opendmarc/opendmarc-arcares.c
++++ b/opendmarc/opendmarc-arcares.c
+@@ -179,6 +179,9 @@ opendmarc_arcares_parse (u_char *hdr, struct arcares *aar)
+ 		if (*token_ptr == '\0')
+ 		        return 0;
+ 		tag_label = strsep(&token_ptr, "=");
++		if (token_ptr == NULL)
++		        return -1;
++
+ 		tag_value = token_ptr;
+ 		tag_code = opendmarc_arcares_convert(aar_tags, tag_label);
+ 
+@@ -201,8 +204,9 @@ opendmarc_arcares_parse (u_char *hdr, struct arcares *aar)
+ 			/* next value will be unlabeled authserv_id */
+ 			if ((token = strsep((char **) &tmp_ptr, ";")) != NULL)
+ 			{
+-				leading_space_len = strspn(token, " \n\t");
+ 				tag_value = opendmarc_arcares_strip_whitespace(token);
++				if (tag_value == NULL)
++				        return -1;
+ 				strlcpy(aar->authserv_id, tag_value, sizeof aar->authserv_id);
+ 			}
+ 			break;
+@@ -266,7 +270,13 @@ opendmarc_arcares_arc_parse (u_char *hdr_arc, struct arcares_arc_field *arc)
+ 		if (*token_ptr == '\0')
+ 			return 0;
+ 		tag_label = strsep(&token_ptr, "=");
++		if (token_ptr == NULL)
++		        return -1;
++
+ 		tag_value = opendmarc_arcares_strip_whitespace(token_ptr);
++		if (tag_value == NULL)
++		        return -1;
++
+ 		tag_code = opendmarc_arcares_convert(aar_arc_tags, tag_label);
+ 
+ 		switch (tag_code)

@@ -1,0 +1,35 @@
+From: "@KIC-8462852" <>
+Date: Sat, 17 Jun 2023 11:48:36 +0100
+Subject: Fix memory leaks when parsing ARC headers
+
+Origin: other, https://github.com/trusteddomainproject/OpenDMARC/files/11602321/opendmarc.patch.txt
+Bug: https://github.com/trusteddomainproject/OpenDMARC/issues/241
+---
+ opendmarc/opendmarc.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/opendmarc/opendmarc.c b/opendmarc/opendmarc.c
+index 9317817..e53953e 100644
+--- a/opendmarc/opendmarc.c
++++ b/opendmarc/opendmarc.c
+@@ -2614,6 +2614,8 @@ mlfi_eom(SMFICTX *ctx)
+ 		/* parse it */
+ 		if (opendmarc_arcares_parse(hdr->hdr_value, &aar_hdr_new->arcares) != 0)
+ 		{
++			free(aar_hdr_new);
++			aar_hdr_new = NULL;
+ 			syslog(LOG_WARNING,
+ 			       "%s: ignoring invalid %s header \"%s\"",
+ 			       dfc->mctx_jobid, hdr->hdr_name, hdr->hdr_value);
+@@ -2660,7 +2662,11 @@ mlfi_eom(SMFICTX *ctx)
+ 
+ 		/* parse it */
+ 		if (opendmarc_arcseal_parse(hdr->hdr_value, &as_hdr_new->arcseal) != 0)
++		{
++			free(as_hdr_new);
++			as_hdr_new = NULL;
+ 			continue;
++		}
+ 
+ 		if (dfc->mctx_ashead == NULL)
+ 		{

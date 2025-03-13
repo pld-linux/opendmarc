@@ -1,0 +1,50 @@
+From: "@KIC-8462852" <>
+Date: Tue, 18 Jan 2022 11:57:01 -0500
+Subject: Fix segfaults, increase token max lengths in ARC-Seal headers
+
+Origin: other, https://github.com/trusteddomainproject/OpenDMARC/files/6717466/opendmarc-arcseal.patch.txt
+Bug: https://github.com/trusteddomainproject/OpenDMARC/issues/183
+---
+ opendmarc/opendmarc-arcseal.c | 7 ++++++-
+ opendmarc/opendmarc-arcseal.h | 2 +-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/opendmarc/opendmarc-arcseal.c b/opendmarc/opendmarc-arcseal.c
+index 73eebb7..a5ae77b 100644
+--- a/opendmarc/opendmarc-arcseal.c
++++ b/opendmarc/opendmarc-arcseal.c
+@@ -29,7 +29,7 @@
+ #include "opendmarc.h"
+ 
+ #define OPENDMARC_ARCSEAL_MAX_FIELD_NAME_LEN 255
+-#define OPENDMARC_ARCSEAL_MAX_TOKEN_LEN      512
++#define OPENDMARC_ARCSEAL_MAX_TOKEN_LEN      768
+ 
+ /* tables */
+ struct opendmarc_arcseal_lookup
+@@ -167,7 +167,12 @@ opendmarc_arcseal_parse(u_char *hdr, struct arcseal *as)
+ 		if (*token_ptr == '\0')
+ 			return 0;
+ 		tag_label = strsep(&token_ptr, "=");
++		if (token_ptr == NULL)
++			return -1;
++
+ 		tag_value = opendmarc_arcseal_strip_whitespace(token_ptr);
++		if (tag_value == NULL)
++			return -1;
+ 
+ 		tag_code = opendmarc_arcseal_convert(as_tags, tag_label);
+ 
+diff --git a/opendmarc/opendmarc-arcseal.h b/opendmarc/opendmarc-arcseal.h
+index 4eb0927..6e11a06 100644
+--- a/opendmarc/opendmarc-arcseal.h
++++ b/opendmarc/opendmarc-arcseal.h
+@@ -32,7 +32,7 @@
+ /* max header tag value length (short) */
+ #define OPENDMARC_ARCSEAL_MAX_SHORT_VALUE_LEN 256
+ /* max header tag value length (long) */
+-#define OPENDMARC_ARCSEAL_MAX_LONG_VALUE_LEN  512
++#define OPENDMARC_ARCSEAL_MAX_LONG_VALUE_LEN  768
+ 
+ /* names and field labels */
+ #define OPENDMARC_ARCSEAL_HDRNAME	"ARC-Seal"

@@ -6,12 +6,29 @@
 Summary:	DMARC milter and library
 Name:		opendmarc
 Version:	%{ver_dot}
-Release:	1
+Release:	2
 License:	BSD
 Group:		Daemons
 Source0:	https://github.com/trusteddomainproject/OpenDMARC/archive/refs/tags/rel-%{name}-%{ver}.tar.gz
 # Source0-md5:	658d951db84a0305b0c5d9312eff5b64
 Source1:	%{name}.tmpfiles
+Patch0:		ticket168.patch
+Patch1:		ticket193.patch
+Patch2:		ticket204.patch
+Patch3:		ticket207.patch
+Patch4:		ticket208.patch
+Patch5:		ticket212.patch
+Patch6:		insheader.patch
+Patch7:		check_domain.patch
+Patch8:		arcseal-segfaults.patch
+Patch9:		conf_refcnt.patch
+Patch10:	free-arcdomain.patch
+Patch11:	arc-override-quarantine.patch
+Patch12:	cleanup-buflen.patch
+Patch13:	check-correct-domain.patch
+Patch14:	arcares-segfaults.patch
+Patch15:	parse-arc-leaks.patch
+Patch16:	cve-2024-25768.patch
 URL:		http://www.trusteddomain.org/opendmarc.html
 BuildRequires:	libspf2-devel
 BuildRequires:	pkgconfig
@@ -49,6 +66,22 @@ files required for developing applications against libopendmarc.
 
 %prep
 %setup -q -n OpenDMARC-rel-%{name}-%{ver}
+%patch -P1 -p1
+%patch -P2 -p1
+%patch -P3 -p1
+%patch -P4 -p1
+%patch -P5 -p1
+%patch -P6 -p1
+%patch -P7 -p1
+%patch -P8 -p1
+%patch -P9 -p1
+%patch -P10 -p1
+%patch -P11 -p1
+%patch -P12 -p1
+%patch -P13 -p1
+%patch -P14 -p1
+%patch -P15 -p1
+%patch -P16 -p1
 
 %build
 autoreconf -v -i

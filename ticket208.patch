@@ -1,0 +1,131 @@
+From: Scott Kitterman <scott@kitterman.com>
+Date: Mon, 23 Dec 2019 11:12:36 -0500
+Subject: ticket208
+
+Bug: https://sourceforge.net/p/opendmarc/tickets/208/
+---
+ opendmarc/opendmarc-config.h    |  1 +
+ opendmarc/opendmarc.c           | 36 +++++++++++++++++++++++++++++++++++-
+ opendmarc/opendmarc.conf.5.in   |  7 +++++++
+ opendmarc/opendmarc.conf.sample | 10 ++++++++++
+ 4 files changed, 53 insertions(+), 1 deletion(-)
+
+diff --git a/opendmarc/opendmarc-config.h b/opendmarc/opendmarc-config.h
+index 8398007..84cdcc5 100644
+--- a/opendmarc/opendmarc-config.h
++++ b/opendmarc/opendmarc-config.h
+@@ -40,6 +40,7 @@ struct configdef dmarcf_config[] =
+ 	{ "IgnoreAuthenticatedClients",	CONFIG_TYPE_BOOLEAN,	FALSE },
+ 	{ "IgnoreHosts",		CONFIG_TYPE_STRING,	FALSE },
+ 	{ "IgnoreMailFrom",		CONFIG_TYPE_STRING,	FALSE },
++	{ "IgnoreMailTo",		CONFIG_TYPE_STRING,	FALSE },
+ 	{ "MilterDebug",		CONFIG_TYPE_INTEGER,	FALSE },
+ 	{ "PidFile",			CONFIG_TYPE_STRING,	FALSE },
+ 	{ "PublicSuffixList",		CONFIG_TYPE_STRING,	FALSE },
+diff --git a/opendmarc/opendmarc.c b/opendmarc/opendmarc.c
+index 687ef6d..5b09c3f 100644
+--- a/opendmarc/opendmarc.c
++++ b/opendmarc/opendmarc.c
+@@ -195,6 +195,7 @@ struct dmarcf_config
+ 	char **			conf_ignoredomains;
+ 	struct list *		conf_domainwhitelist;
+ 	unsigned int		conf_domainwhitelisthashcount;
++	char **                 conf_ignorereceivers;
+ };
+ 
+ /* LIST -- basic linked list of strings */
+@@ -1381,6 +1382,11 @@ dmarcf_config_load(struct config *data, struct dmarcf_config *conf,
+ 		if (str != NULL)
+ 			dmarcf_mkarray(str, ",", &conf->conf_ignoredomains);
+ 
++		str = NULL;
++		(void) config_get(data, "IgnoreMailTo", &str, sizeof str);
++		if (str != NULL)
++			dmarcf_mkarray(str, ",", &conf->conf_ignorereceivers);
++
+ 		(void) config_get(data, "AuthservIDWithJobID",
+ 		                  &conf->conf_authservidwithjobid,
+ 		                  sizeof conf->conf_authservidwithjobid);
+@@ -2339,6 +2345,7 @@ sfsistat
+ mlfi_eom(SMFICTX *ctx)
+ {
+ 	_Bool wspf = FALSE;
++	int skiphistory;
+ 	int c;
+ 	int pc;
+ 	int policy;
+@@ -3803,7 +3810,34 @@ mlfi_eom(SMFICTX *ctx)
+ 	**  Record activity in the history file.
+ 	*/
+ 
+-	if (conf->conf_historyfile != NULL &&
++	skiphistory = 0;
++	if (conf->conf_ignorereceivers != NULL)
++	{
++		struct dmarcf_header *to = dmarcf_findheader(dfc, "To", 0);
++		if (to != NULL)
++		{
++			char *val = to->hdr_value;
++			while (*val && !skiphistory)
++			{
++				memset(addrbuf, '\0', sizeof addrbuf);
++				strncpy(addrbuf, val, sizeof addrbuf - 1);
++				status = dmarcf_mail_parse(addrbuf, &user, &domain);
++				if (status == 0 && user != NULL && domain != NULL)
++				{
++					snprintf(replybuf, sizeof replybuf - 1, "%s@%s", user, domain);
++					if(dmarcf_match(replybuf, conf->conf_ignorereceivers, TRUE))
++					{
++						skiphistory = 1;
++					}
++				}
++				while(*val && *val != ',' && *val != ';')
++					++val;
++				if(*val)
++					++val;
++			}
++		}
++	}
++	if (!skiphistory && conf->conf_historyfile != NULL &&
+ 	    (conf->conf_recordall || ostatus != DMARC_DNS_ERROR_NO_RECORD))
+ 	{
+ 		FILE *f;
+diff --git a/opendmarc/opendmarc.conf.5.in b/opendmarc/opendmarc.conf.5.in
+index ced6ddb..dcb518c 100644
+--- a/opendmarc/opendmarc.conf.5.in
++++ b/opendmarc/opendmarc.conf.5.in
+@@ -231,6 +231,13 @@ be ignored by the filter.  The list should be comma-separated.  Matching
+ against this list is case-insensitive.  The default is an empty list, meaning
+ no mail is ignored.
+ 
++.TP
++.I IgnoreMailTo (string)
++Gives a list of mail addresses which aren't entered into the history file.
++This is useful to prevent exchanging mutual message reports.  The
++list should be comma-separated.  Matching against this list is
++case-insensitive.  The default is an empty list, meaning no mail is ignored.
++
+ .TP
+ .I MilterDebug (integer)
+ Sets the debug level to be requested from the milter library.  The
+diff --git a/opendmarc/opendmarc.conf.sample b/opendmarc/opendmarc.conf.sample
+index 2accc6f..4e1f1ab 100644
+--- a/opendmarc/opendmarc.conf.sample
++++ b/opendmarc/opendmarc.conf.sample
+@@ -268,6 +268,16 @@
+ #
+ # IgnoreMailFrom example.com
+ 
++##  IgnoreMailTo email[,...]
++##  	default (none)
++##
++##  Gives a list of mail addresses which aren't entered into the history file.
++##  This is useful to prevent exchanging mutual message reports.  The
++##  list should be comma-separated.  Matching against this list is
++##  case-insensitive.  The default is an empty list, meaning no mail is ignored.
++#
++# IgnoreMailTo dmarc-ruf@example.com
++
+ ##  MilterDebug (integer)
+ ##  	default 0
+ ##

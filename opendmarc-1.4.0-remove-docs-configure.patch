@@ -1,0 +1,27 @@
+diff --color -Nur OpenDMARC-rel-opendmarc-1-4-0.orig/configure.ac OpenDMARC-rel-opendmarc-1-4-0/configure.ac
+--- OpenDMARC-rel-opendmarc-1-4-0.orig/configure.ac	2021-01-28 09:35:29.000000000 -0800
++++ OpenDMARC-rel-opendmarc-1-4-0/configure.ac	2021-04-24 21:18:14.467833053 -0700
+@@ -139,15 +139,9 @@
+ AC_SEARCH_LIBS(res_ninit, resolv,
+ 	AC_DEFINE(HAVE_RES_NINIT, 1,
+ 	[Define to 1 if you have the `res_ninit()' function.]))
+-AC_SEARCH_LIBS(res_ndestroy, resolv,
+-        AC_DEFINE(HAVE_RES_NDESTROY, 1,
+-        [Define to 1 if you have the `res_ndestroy()' function.]))
+ AC_SEARCH_LIBS(__res_ninit, resolv,
+         AC_DEFINE(HAVE_RES_NINIT, 1,
+         [Define to 1 if you have the `__res_ninit()' function.]))
+-AC_SEARCH_LIBS(__res_ndestroy, resolv,
+-        AC_DEFINE(HAVE_RES_NDESTROY, 1,
+-        [Define to 1 if you have the `__res_ndestroy()' function.]))
+  
+ m4_rename_force([saved_AC_LANG_CALL], [AC_LANG_CALL])
+ AC_CHECK_LIB(idn, idn_free)
+@@ -513,7 +507,6 @@
+ 	contrib/spec/Makefile
+ 		contrib/spec/opendmarc.spec
+ 	db/Makefile
+-	docs/Makefile
+ 	libopendmarc/Makefile
+ 	libopendmarc/tests/Makefile
+ 	libopendmarc/tests/testfiles/Makefile

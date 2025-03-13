@@ -1,0 +1,49 @@
+From: Scott Kitterman <scott@kitterman.com>
+Date: Mon, 23 Dec 2019 11:12:36 -0500
+Subject: ticket207
+
+Bug: https://sourceforge.net/p/opendmarc/tickets/207/
+---
+ reports/opendmarc-reports.in | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/reports/opendmarc-reports.in b/reports/opendmarc-reports.in
+index 69a2194..143997e 100755
+--- a/reports/opendmarc-reports.in
++++ b/reports/opendmarc-reports.in
+@@ -65,6 +65,7 @@ my $domainset;
+ my $forcedomain;
+ my @skipdomains;
+ 
++my $poldomain;
+ my $policy;
+ my $spolicy;
+ my $policystr;
+@@ -447,7 +448,7 @@ foreach (@$domainset)
+ 		next;
+ 	}
+ 
+-	$dbi_s = $dbi_h->prepare("SELECT repuri, adkim, aspf, policy, spolicy, pct, UNIX_TIMESTAMP(lastsent) FROM requests WHERE domain = ?");
++	$dbi_s = $dbi_h->prepare("SELECT repuri, adkim, aspf, requests.policy, spolicy, pct, UNIX_TIMESTAMP(lastsent), domains.name FROM requests JOIN messages ON messages.from_domain=requests.domain LEFT JOIN domains ON messages.policy_domain = domains.id WHERE domain = ? GROUP BY policy_domain");
+ 	if (!$dbi_s->execute($domainid))
+ 	{
+ 		print STDERR "$progname: can't get reporting URI for domain $domain: " . $dbi_h->errstr . "\n";
+@@ -457,6 +458,7 @@ foreach (@$domainset)
+ 	}
+ 
+ 	undef $repuri;
++	$poldomain=$domain;
+ 
+ 	while ($dbi_a = $dbi_s->fetchrow_arrayref())
+ 	{
+@@ -488,6 +490,10 @@ foreach (@$domainset)
+ 		{
+ 			$lastsent = $dbi_a->[6];
+ 		}
++		if (defined($dbi_a->[7]))
++		{
++			$poldomain = $dbi_a->[7];
++		}
+ 	}
+ 
+ 	$dbi_s->finish;
