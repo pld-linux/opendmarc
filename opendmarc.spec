@@ -1,5 +1,4 @@
 # TODO
-# - pld useradd/groupadd and register uid/gid
 # - pldize initscript
 %define		ver 1-4-2
 %define		ver_dot	%(echo %{ver} | tr '-' '.')
@@ -35,7 +34,15 @@ BuildRequires:	libspf2-devel
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.644
 BuildRequires:	sendmail-devel
+Requires(pre):	/bin/id
+Requires(pre):	/usr/bin/getgid
+Requires(pre):	/usr/sbin/groupadd
+Requires(pre):	/usr/sbin/useradd
+Requires(postun):	/usr/sbin/groupdel
+Requires(postun):	/usr/sbin/userdel
 Requires:	libopendmarc = %{version}-%{release}
+Provides:	group(opendmarc)
+Provides:	user(opendmarc)
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -142,10 +149,8 @@ cp -p libopendmarc/dmarc.h $RPM_BUILD_ROOT%{_includedir}/%{name}
 rm -rf $RPM_BUILD_ROOT
 
 %pre
-getent group %{name} >/dev/null || groupadd -r %{name}
-getent passwd %{name} >/dev/null || \
-	useradd -r -g %{name} -G mail -d %{_localstatedir}/run/%{name} -s /sbin/nologin \
-	-c "OpenDMARC Milter" %{name}
+%groupadd -g 353 opendmarc
+%useradd -u 353 -G mail -g opendmarc -d %{_localstatedir}/run/%{name} -s /sbin/nologin -c "OpenDMARC Milter" opendmarc
 
 %post
 /sbin/chkconfig --add %{name}
@@ -155,6 +160,12 @@ getent passwd %{name} >/dev/null || \
 if [ $1 -eq 0 ]; then
 	/sbin/chkconfig --del %{name}
 	%service %{name} stop
+fi
+
+%postun
+if [ "$1" = "0" ]; then
+	%userremove opendmarc
+	%groupremove opendmarc
 fi
 
 %post	-n libopendmarc -p /sbin/ldconfig
