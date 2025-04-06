@@ -4,6 +4,7 @@
 %define		ver 1-4-2
 %define		ver_dot	%(echo %{ver} | tr '-' '.')
 Summary:	DMARC milter and library
+Summary(pl.UTF-8):	Milter i biblioteka DMARC
 Name:		opendmarc
 Version:	%{ver_dot}
 Release:	2
@@ -47,22 +48,40 @@ other MTA that supports the milter protocol.
 The DMARC sender authentication system is still a draft standard,
 working towards RFC status.
 
+%description -l pl.UTF-8
+OpenDMARC (Domain-based Message Authentication, Reporting &
+Conformance - oparte na domenie uwierzytelnianie, raportowanie i
+zgodność wiadomości) zapewnia mającą otwarte źródła bibliotekę
+implementującą usługę weryfikacji DMARC oraz opartą o milter aplikację
+filtrującą, którą można wpiąć w dowolny MTA obsługujący protokół
+milter - w tym sendmail czy Postfix.
+
 %package -n libopendmarc
 Summary:	An open source DMARC library
+Summary(pl.UTF-8):	Biblioteka DMARC o otwartych źródłach
 Group:		Libraries
 
 %description -n libopendmarc
 This package contains the library files required for running services
 built using libopendmarc.
 
+%description -n libopendmarc -l pl.UTF-8
+Ten pakiet zawiera pliki biblioteki wymagane do uruchamiania usług
+zbudowanych przy użyciu libopendmarc.
+
 %package -n libopendmarc-devel
 Summary:	Development files for libopendmarc
+Summary(pl.UTF-8):	Pliki programistyczne biblioteki opendmarc
 Group:		Development/Libraries
 Requires:	libopendmarc = %{version}-%{release}
 
 %description -n libopendmarc-devel
-This package contains the static libraries, headers, and other support
-files required for developing applications against libopendmarc.
+This package contains the headers, and other support files required
+for developing applications against libopendmarc.
+
+%description -n libopendmarc-devel -l pl.UTF-8
+Ten pakiet zawiera pliki nagłówkowe i inne pliki pomocnicze wymagane
+do tworzenia aplikacji wykorzystujących bibliotekę libopendmarc.
 
 %prep
 %setup -q -n OpenDMARC-rel-%{name}-%{ver}
@@ -115,9 +134,9 @@ cp -p %{SOURCE1} $RPM_BUILD_ROOT%{systemdtmpfilesdir}/%{name}.conf
 install -d $RPM_BUILD_ROOT%{_includedir}/%{name}
 cp -p libopendmarc/dmarc.h $RPM_BUILD_ROOT%{_includedir}/%{name}
 
-rm $RPM_BUILD_ROOT%{_libdir}/*.la
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/*.la
 # packaged as %doc
-rm -r $RPM_BUILD_ROOT%{_docdir}/%{name}
+%{__rm} -r $RPM_BUILD_ROOT%{_docdir}/%{name}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
