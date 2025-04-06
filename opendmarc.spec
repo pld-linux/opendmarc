@@ -30,7 +30,11 @@ Patch14:	arcares-segfaults.patch
 Patch15:	parse-arc-leaks.patch
 Patch16:	cve-2024-25768.patch
 URL:		http://www.trusteddomain.org/opendmarc.html
+BuildRequires:	autoconf >= 2.61
+BuildRequires:	automake
+BuildRequires:	libidn-devel
 BuildRequires:	libspf2-devel
+BuildRequires:	libtool >= 2:2
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.644
 BuildRequires:	sendmail-devel
@@ -110,7 +114,11 @@ do tworzenia aplikacji wykorzystujących bibliotekę libopendmarc.
 %patch -P16 -p1
 
 %build
-autoreconf -v -i
+%{__libtoolize}
+%{__aclocal} -I m4
+%{__autoconf}
+%{__autoheader}
+%{__automake}
 %configure \
 	--disable-silent-rules \
 	--disable-static \
