@@ -6,7 +6,7 @@ Summary:	DMARC milter and library
 Summary(pl.UTF-8):	Milter i biblioteka DMARC
 Name:		opendmarc
 Version:	%{ver_dot}
-Release:	2
+Release:	3
 License:	BSD
 Group:		Daemons
 Source0:	https://github.com/trusteddomainproject/OpenDMARC/archive/refs/tags/rel-%{name}-%{ver}.tar.gz
